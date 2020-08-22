@@ -130,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onAddButtonClick(View view) {
-        //Intent intent = new Intent(view.getContext(), ...);
-        //startActivityForResult(intent, CHOOSE_TARGET_REQUEST);
+        Intent intent = new Intent(view.getContext(), GoogleMapActivity.class);
+        startActivityForResult(intent, CHOOSE_TARGET_REQUEST);
     }
 
     public void numpadClick(View view) {
@@ -320,8 +320,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onChangeBaseClick(View view) {
-        //Intent intent = new Intent(view.getContext(), ...);
-        //startActivityForResult(intent, CHOOSE_BASE_REQUEST);
+        Intent intent = new Intent(view.getContext(), thanhActivity.class);
+        startActivityForResult(intent, CHOOSE_BASE_REQUEST);
     }
 
     private class OkHttpHandler extends AsyncTask<String, Void, String>

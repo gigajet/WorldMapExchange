@@ -64,6 +64,7 @@ public class thanhActivity extends AppCompatActivity {
 
     private void finishWork(int position) {
         resources.chosenCurrency = resources.allBaseCurrency.get(position);
+        resources.baseCurrency = resources.chosenCurrency.name;
         setResult(MainActivity.RESULT_OK);
         finish();
     }

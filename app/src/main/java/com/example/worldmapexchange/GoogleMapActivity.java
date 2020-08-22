@@ -186,8 +186,15 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
 
     private void SubmitComplete() {
         //todo now update something to class Resource (or if you don't like, do it in onDestroy) ?
-
+        Resources.targetList = mCurrencyInfos;
+        setResult(RESULT_OK);
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
     }
 
     @Override
