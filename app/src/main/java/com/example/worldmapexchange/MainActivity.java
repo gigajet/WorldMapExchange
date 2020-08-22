@@ -1,36 +1,69 @@
 package com.example.worldmapexchange;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.Manifest;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.TextView;
 
-import java.security.Permission;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 
 public class MainActivity extends AppCompatActivity {
+    private Resources resources = Resources.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initNumPad();
+    }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.INTERNET}, 1);
-            if (checkSelfPermission(Manifest.permission.INTERNET)== PackageManager.PERMISSION_GRANTED) {
-                Intent it=new Intent(this,GoogleMapActivity.class);
-                startActivityForResult(it,1);
-            }
-            else {
-                Toast.makeText(this, "No permission no app", Toast.LENGTH_SHORT).show();
-            }
-        }
-        else {
-            Intent it=new Intent(this,GoogleMapActivity.class);
-            startActivityForResult(it,1);
-        }
+    public void numpadClick(View view) {
+        //handle onclick
+        //int id = view.getId();
+        //String identity = getResources().getResourceEntryName(id);
+    }
+  
+    public void initNumPad()
+    {
+        TextView textView = findViewById(R.id.btn_0);
+        textView.setText("0");
+        textView = findViewById(R.id.btn_1);
+        textView.setText("1");
+        textView = findViewById(R.id.btn_2);
+        textView.setText("2");
+        textView = findViewById(R.id.btn_3);
+        textView.setText("3");
+        textView = findViewById(R.id.btn_4);
+        textView.setText("4");
+        textView = findViewById(R.id.btn_5);
+        textView.setText("5");
+        textView = findViewById(R.id.btn_6);
+        textView.setText("6");
+        textView = findViewById(R.id.btn_7);
+        textView.setText("7");
+        textView = findViewById(R.id.btn_8);
+        textView.setText("8");
+        textView = findViewById(R.id.btn_9);
+        textView.setText("9");
+        textView = findViewById(R.id.btn_dot);
+        textView.setText(".");
     }
 }
