@@ -2,11 +2,29 @@ package com.example.worldmapexchange;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class MainActivity extends AppCompatActivity {
+    private Resources resources = Resources.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +37,25 @@ public class MainActivity extends AppCompatActivity {
         //handle onclick
         //int id = view.getId();
         //String identity = getResources().getResourceEntryName(id);
+    }
+
+    //thanh test
+    public void addNewCurrency(View view) {
+        Intent intent = new Intent(this,thanhActivity.class);
+        startActivityForResult(intent,1);
+        onActivityResult(1,RESULT_OK,getIntent());
+    }
+
+    //thanh test
+    public void onActivityResult(int requestCode, int resultCode,  Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                if (resources.chosenCurrency == null || resources.baseCurrencyAPI == null) return;
+                TextView textView = findViewById(R.id.test);
+                textView.setText(resources.chosenCurrency.name + " base:" + resources.baseCurrencyAPI.name);
+            }
+        }
     }
 
     public void initNumPad()
