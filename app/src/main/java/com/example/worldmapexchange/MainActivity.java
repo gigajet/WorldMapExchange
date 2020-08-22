@@ -1,5 +1,6 @@
 package com.example.worldmapexchange;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
@@ -43,15 +44,15 @@ public class MainActivity extends AppCompatActivity {
     public void addNewCurrency(View view) {
         Intent intent = new Intent(this,thanhActivity.class);
         startActivityForResult(intent,1);
-        onActivityResult(1,RESULT_OK,getIntent());
     }
 
     //thanh test
-    public void onActivityResult(int requestCode, int resultCode,  Intent data) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                if (resources.chosenCurrency == null || resources.baseCurrencyAPI == null) return;
+                //if (resources.chosenCurrency == null || resources.baseCurrencyAPI == null) return;
                 TextView textView = findViewById(R.id.test);
                 textView.setText(resources.chosenCurrency.name + " base:" + resources.baseCurrencyAPI.name);
             }
