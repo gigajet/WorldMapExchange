@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -99,8 +100,12 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         mMarker = mMap.addMarker(markerOption);
                 //Get the country at mChosenLocation (prefer AsyncTask)
                 //Update marker and selected country name
-        new AsyncTaskUpdateChosenLocation().execute(mChosenLocation);
 
+        //Disable submit button
+        Button button=findViewById(R.id.btnSubmit);
+        button.setEnabled(false);
+
+        new AsyncTaskUpdateChosenLocation().execute(mChosenLocation);
     }
 
     public void btnSubmitOnClick(View view) {
@@ -141,10 +146,24 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         protected void onPostExecute(Address address) {
             //never prune out information.
             mChosenLocationAddress = address;
-            if (address != null)
-                mTvCountryName.setText(address.getCountryName());
+            if (address != null) {
+                String countryName = address.getCountryName();
+                if (countryName != null)
+                    mTvCountryName.setText(countryName);
+                else {
+                    mChosenLocationAddress = null;
+                    mTvCountryName.setText("Not a country. Please select a country");
+                }
+            }
             else mTvCountryName.setText("Not a country. Please select a country");
+            //Enable submit button
+            EnableSubmitButton();
         }
+    }
+
+    private void EnableSubmitButton() {
+        Button button=findViewById(R.id.btnSubmit);
+        button.setEnabled(true);
     }
 
     class AsyncTaskGetCurrencyInfo extends AsyncTask<String, Void, ArrayList<CurrencyInfo> > {
@@ -171,14 +190,14 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(),
-                            "AsyncTaskGetCurrencyInfo.doInBackground error JSON nhu cac", Toast.LENGTH_SHORT)
-                            .show();
+                    //Toast.makeText(getApplicationContext(),
+                    //        "AsyncTaskGetCurrencyInfo.doInBackground error JSON nhu cac", Toast.LENGTH_SHORT)
+                    //        .show();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(),
-                            "AsyncTaskGetCurrencyInfo.doInBackground error", Toast.LENGTH_SHORT)
-                            .show();
+                    //Toast.makeText(getApplicationContext(),
+                    //        "AsyncTaskGetCurrencyInfo.doInBackground error", Toast.LENGTH_SHORT)
+                    //        .show();
                 }
             }
             return ans;
