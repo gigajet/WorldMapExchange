@@ -31,6 +31,7 @@ import okhttp3.Response;
 import static android.widget.Toast.LENGTH_SHORT;
 
 public class MainActivity extends AppCompatActivity {
+    private Resources resources = Resources.getInstance();
 
     private static final int CHOOSE_BASE_REQUEST = 1;
     private static final int CHOOSE_TARGET_REQUEST = 2;
