@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 import org.w3c.dom.Text;
@@ -26,6 +27,8 @@ import java.util.List;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -352,6 +355,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(s);
             if (s.equalsIgnoreCase("fail"))
             {
+                Toast.makeText(MainActivity.getInstance().getApplicationContext(), "no Internet connection", LENGTH_SHORT).show();
                 return;
             }
             try {
@@ -361,7 +365,8 @@ public class MainActivity extends AppCompatActivity {
 
                 //convert tu usd qua base
                 double baseToUSD = convert(amount, base, ratesObj, 0);
-
+//                Log.d("value base =", String.valueOf(baseToUSD));
+//                Toast.makeText(MainActivity.getInstance().getApplicationContext(), String.valueOf(baseToUSD), LENGTH_SHORT).show();
                 ListView lv = (ListView)MainActivity.getInstance().findViewById(R.id.currencyList);
                 CurrencyInfoAdapter currencyInfoAdapter = (CurrencyInfoAdapter) lv.getAdapter();
                 if (currencyInfoAdapter == null) return;
