@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                //if (resources.chosenCurrency == null || resources.baseCurrencyAPI == null) return;
                 TextView textView = findViewById(R.id.test);
                 textView.setText(resources.chosenCurrency.name + " base:" + resources.baseCurrencyAPI.name);
             }

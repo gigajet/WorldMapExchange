@@ -33,8 +33,10 @@ public class thanhActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thanh);
-
-        (new GetOnlineRate(this)).execute();
+        if (resources.allBaseCurrency == null)
+            (new GetOnlineRate(this)).execute();
+        else
+            updateCurrency();
     }
 
     @Override
@@ -54,10 +56,15 @@ public class thanhActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        setResult(MainActivity.RESULT_CANCELED);
+        finish();
+    }
+
     private void finishWork(int position) {
         resources.chosenCurrency = resources.allBaseCurrency.get(position);
-        Intent intent = new Intent(this,MainActivity.class);
-        setResult(MainActivity.RESULT_OK,intent);
+        setResult(MainActivity.RESULT_OK);
         finish();
     }
 
