@@ -24,7 +24,8 @@ public class thanhCurrencyAdapter extends ArrayAdapter<CurrencyInfo> {
 
     private static class ViewHolder
     {
-        CheckedTextView txtName;
+        TextView name;
+        TextView code;
         SVGImageView im;
     }
 
@@ -41,7 +42,8 @@ public class thanhCurrencyAdapter extends ArrayAdapter<CurrencyInfo> {
             LayoutInflater inflater = LayoutInflater.from(this.getContext());
             convertView = inflater.inflate(R.layout.thanh_item_list_view, parent, false);
             viewHolder.im = convertView.findViewById(R.id.svgimageitem);
-            viewHolder.im.setImageAsset(currencyInfo.src);
+            viewHolder.name = convertView.findViewById(R.id.nameitem);
+            viewHolder.code = convertView.findViewById(R.id.codenameitem);
             //viewHolder.im.setScaleX(1);
             //viewHolder.im.setScaleY(1);
             convertView.setTag(viewHolder);
@@ -50,11 +52,9 @@ public class thanhCurrencyAdapter extends ArrayAdapter<CurrencyInfo> {
         {
             viewHolder = (thanhCurrencyAdapter.ViewHolder) convertView.getTag();
         }
-        TextView textView;
-        textView = convertView.findViewById(R.id.codenameitem);
-        textView.setText(currencyInfo.code);
-        textView = convertView.findViewById(R.id.nameitem);
-        textView.setText(currencyInfo.name);
+        viewHolder.im.setImageAsset(currencyInfo.src);
+        viewHolder.code.setText(currencyInfo.code);
+        viewHolder.name.setText(currencyInfo.name);
 
         return convertView;
     }
