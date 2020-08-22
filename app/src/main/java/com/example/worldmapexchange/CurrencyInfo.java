@@ -5,8 +5,7 @@ public class CurrencyInfo {
     public String name;
     public String src;
     public Double value;
-    CurrencyInfo(String code, String name,String src,Double value)
-    {
+    public CurrencyInfo(String name, String code, String src, double value) {
         this.code = code;
         this.name = name;
         this.src = src;

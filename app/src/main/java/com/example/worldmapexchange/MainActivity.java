@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+
 public class MainActivity extends AppCompatActivity {
     private Resources resources = Resources.getInstance();
 
@@ -39,25 +40,7 @@ public class MainActivity extends AppCompatActivity {
         //int id = view.getId();
         //String identity = getResources().getResourceEntryName(id);
     }
-
-    //thanh test
-    public void addNewCurrency(View view) {
-        Intent intent = new Intent(this,thanhActivity.class);
-        startActivityForResult(intent,1);
-    }
-
-    //thanh test
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                TextView textView = findViewById(R.id.test);
-                textView.setText(resources.chosenCurrency.name + " base:" + resources.baseCurrencyAPI.name);
-            }
-        }
-    }
-
+  
     public void initNumPad()
     {
         TextView textView = findViewById(R.id.btn_0);
