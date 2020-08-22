@@ -18,6 +18,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,7 +45,7 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
     private TextView mTvCountryName;
     private OkHttpClient okHttpClient;
     private ArrayList<CurrencyInfo> mCurrencyInfos;
-
+    private Marker mMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        mMarker=null;
         mapFragment.getMapAsync(this);
         mGeocoder=new Geocoder(this, Locale.getDefault());
         mTvCountryName=findViewById(R.id.tvCountryName);
@@ -88,8 +91,14 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
     @Override
     public void onMapClick(LatLng latLng) {
         mChosenLocation=latLng;
-        //Get the country at mChosenLocation (prefer AsyncTask)
-        //Update marker and selected country name
+        if (mMarker != null) {
+            mMarker.remove();
+        }
+        MarkerOptions markerOption = new MarkerOptions()
+                .position(latLng);
+        mMarker = mMap.addMarker(markerOption);
+                //Get the country at mChosenLocation (prefer AsyncTask)
+                //Update marker and selected country name
         new AsyncTaskUpdateChosenLocation().execute(mChosenLocation);
 
     }
