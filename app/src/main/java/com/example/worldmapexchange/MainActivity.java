@@ -1,16 +1,36 @@
 package com.example.worldmapexchange;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import org.json.JSONObject;
+import org.w3c.dom.Text;
+
+import java.math.RoundingMode;
+import java.text.NumberFormat;
+import java.util.Iterator;
+import java.util.List;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 public class MainActivity extends AppCompatActivity {
+
+    private static final int CHOOSE_BASE_REQUEST = 1;
+    private static final int CHOOSE_TARGET_REQUEST = 2;
 
     private static boolean isValid;
     private static MainActivity instance;
@@ -20,10 +40,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CHOOSE_BASE_REQUEST) {
+            if (resultCode != RESULT_OK) return;
+            TextView base1 = (TextView) findViewById(R.id.txt_Base_1);
+            TextView base2 = (TextView) findViewById(R.id.txt_Base_2);
+
+            base1.setText(Resources.getInstance().baseCurrency);
+            base2.setText(Resources.getInstance().baseCurrency);
+        }
+        if (requestCode == CHOOSE_TARGET_REQUEST) {
+            if (resultCode != RESULT_OK) return;
+            ListView lv = (ListView) findViewById(R.id.currencyList);
+            if (Resources.targetList == null)
+                return;
+            else {
+                CurrencyInfoAdapter currencyInfoAdapter = new CurrencyInfoAdapter(this.getApplicationContext(), Resources.targetList);
+                lv.setAdapter(currencyInfoAdapter);
+            }
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         instance = this;
+
         initComponent();
     }
 
@@ -66,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
             public boolean onLongClick(View view) {
                 TextView txt = (TextView)MainActivity.getInstance().findViewById(R.id.txt_Expression);
                 txt.setText("0");
-                //MainActivity.getInstance().convertCLick();
                 return true;
             }
         });
@@ -82,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onAddButtonClick(View view) {
+        //Intent intent = new Intent(view.getContext(), ...);
+        //startActivityForResult(intent, CHOOSE_TARGET_REQUEST);
     }
 
     public void numpadClick(View view) {
@@ -94,6 +140,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onConvertClick(View view) {
+        TextView expression = (TextView)findViewById(R.id.txt_Expression);
+        String base = ((TextView)findViewById(R.id.txt_Base_1)).getText().toString();
+        double result = MainActivity.eval(expression.getText().toString());
+        if (!MainActivity.isValid) result = 0.0;
+        TextView txtResult = (TextView)findViewById(R.id.txt_Exp_Result);
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(4);
+        nf.setMinimumFractionDigits(2);
+        nf.setRoundingMode(RoundingMode.CEILING);
+        nf.setGroupingUsed(true);
+        nf.setMinimumIntegerDigits(1);
+        nf.setMaximumIntegerDigits(56);
+        txtResult.setText(nf.format(result));
+
+        String baseurl = "https://currency.labstack.com/api/v1/rates";
+        String apiKey = "bjoVn986JOKvV8BXyGmMeaRq0sTBnlGI203NF68b7mRXqB-0zpbLt";
+
+        (new OkHttpHandler(result, base)).execute(baseurl, apiKey);
     }
 
     public void alertDialog(String msg)
@@ -248,6 +312,104 @@ public class MainActivity extends AppCompatActivity {
                 break;
             default:
                 return;
+        }
+    }
+
+    public void onChangeBaseClick(View view) {
+        //Intent intent = new Intent(view.getContext(), ...);
+        //startActivityForResult(intent, CHOOSE_BASE_REQUEST);
+    }
+
+    private class OkHttpHandler extends AsyncTask<String, Void, String>
+    {
+        double amount;
+        String base;
+        OkHttpClient client = new OkHttpClient();
+
+        public OkHttpHandler(double amount, String base)
+        {
+            this.amount = amount;
+            this.base = base;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            Request request = new Request.Builder().header("Authorization", params[1]).url(params[0]).build();
+            try {
+                Response response = client.newCall(request).execute();
+                Log.d("Response: ", "Success");
+                return response.body().string();
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+                return "fail";
+            }
+            //return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s.equalsIgnoreCase("fail"))
+            {
+                return;
+            }
+            try {
+                JSONObject jobject = new JSONObject(s);
+                String rates = jobject.getString("rates");
+                JSONObject ratesObj = new JSONObject(rates);
+
+                //convert tu usd qua base
+                double baseToUSD = convert(amount, base, ratesObj, 0);
+
+                ListView lv = (ListView)MainActivity.getInstance().findViewById(R.id.currencyList);
+                CurrencyInfoAdapter currencyInfoAdapter = (CurrencyInfoAdapter) lv.getAdapter();
+                if (currencyInfoAdapter == null) return;
+                for (int i = 0; i < currencyInfoAdapter.getCount(); ++i)
+                {
+                    currencyInfoAdapter.getItem(i).value = convert(baseToUSD, currencyInfoAdapter.getItem(i).code, ratesObj, 1);
+                }
+                currencyInfoAdapter.notifyDataSetChanged();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        //opt = 0 -> base -> usd
+        //opt = 1 -> use -> base
+        private double convert(double amount, String base, JSONObject ratesObj,int opt)
+        {
+            double exRate = 0.0;
+            try {
+                for (Iterator<String> i = ratesObj.keys(); i.hasNext();) {
+                    String key = i.next();
+                    if (key.equalsIgnoreCase(base)) {
+                        exRate = convertStringtoDouble(ratesObj.getString(key));
+                        return (opt == 1)?(exRate * amount):(amount / exRate);
+                    }
+                }
+            } catch (Exception e)
+            {
+                return 0.0;
+            }
+            return 0.0;
+        }
+    }
+
+    private double convertStringtoDouble(String s)
+    {
+        try
+        {
+            return Double.parseDouble(s);
+        }
+        catch (Exception e)
+        {
+            alertDialog("Invalid number");
+            Log.d("MainActivity", e.getMessage());
+            MainActivity.isValid = false;
+            return -10.0;
         }
     }
 }

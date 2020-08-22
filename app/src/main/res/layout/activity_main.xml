@@ -24,8 +24,7 @@
             android:textSize="20dp"
             android:lines="1"
             android:maxLength="25"
-            android:layout_weight="0.9
-"
+            android:layout_weight="0.9"
             >
         </TextView>
 
@@ -40,6 +39,7 @@
             android:textSize="20dp"
             android:textStyle="bold"
             android:layout_weight="0.1"
+            android:onClick="onChangeBaseClick"
             >
 
         </TextView>
