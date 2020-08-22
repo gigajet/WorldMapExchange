@@ -64,7 +64,7 @@ public class thanhActivity extends AppCompatActivity {
 
     private void finishWork(int position) {
         resources.chosenCurrency = resources.allBaseCurrency.get(position);
-        resources.baseCurrency = resources.chosenCurrency.name;
+        resources.baseCurrency = resources.chosenCurrency.code;
         setResult(MainActivity.RESULT_OK);
         finish();
     }
@@ -111,9 +111,9 @@ public class thanhActivity extends AppCompatActivity {
                     key = keys.next();
                     src = "image/"+key+".svg";
                     name = Currency.getInstance(key).getDisplayName();
-                    res.add(new CurrencyInfo(key,name,src,0.0));
+                    res.add(new CurrencyInfo(name,key,src,0.0));
                     if (base_rate.equals(key)){
-                        CurrencyInfo tmpcur = new CurrencyInfo(key,name,src,0.0);
+                        CurrencyInfo tmpcur = new CurrencyInfo(name,key,src,0.0);
                         resources.baseCurrencyAPI = tmpcur;
                     }
                 }
