@@ -19,9 +19,20 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
@@ -30,12 +41,15 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
     private Address mChosenLocationAddress = null;
     private Geocoder mGeocoder;
     private TextView mTvCountryName;
+    private OkHttpClient okHttpClient;
+    private ArrayList<CurrencyInfo> mCurrencyInfos;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_map);
+        okHttpClient = new OkHttpClient();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -91,7 +105,8 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         }
         else {
             //todo call API to get destination currencies?
-            finish();
+            AsyncTaskGetCurrencyInfo task=new AsyncTaskGetCurrencyInfo();
+            task.execute(mChosenLocationAddress.getCountryCode());
         }
     }
 
@@ -123,9 +138,60 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         }
     }
 
+    class AsyncTaskGetCurrencyInfo extends AsyncTask<String, Void, ArrayList<CurrencyInfo> > {
+
+        @Override
+        protected ArrayList<CurrencyInfo> doInBackground(String... strings) {
+            ArrayList<CurrencyInfo> ans = new ArrayList<>();
+            for (String countryCode : strings) {
+                Request request = new Request.Builder()
+                        .url("https://restcountries.eu/rest/v2/alpha/" + countryCode)
+                        .build();
+
+                try (Response response = okHttpClient.newCall(request).execute()) {
+                    JSONObject jsonObject = new JSONObject(response.body().string());
+                    JSONArray jsonArray = jsonObject.getJSONArray("currencies");
+                    for (int i = 0; i < jsonArray.length(); ++i) {
+                        JSONObject aCurrency = jsonArray.getJSONObject(i);
+                        String code = aCurrency.getString("code");
+                        String name = aCurrency.getString("name");
+                        String src = code + ".svg";
+                        double value = 0.0;
+                        CurrencyInfo cf = new CurrencyInfo(name, code, src, value);
+                        ans.add(cf);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),
+                            "AsyncTaskGetCurrencyInfo.doInBackground error JSON nhu cac", Toast.LENGTH_SHORT)
+                            .show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(),
+                            "AsyncTaskGetCurrencyInfo.doInBackground error", Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+            return ans;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<CurrencyInfo> currencyInfos) {
+            //Currency info successfully
+            mCurrencyInfos = currencyInfos;
+            SubmitComplete();
+            //super.onPostExecute(currencyInfos);
+        }
+    }
+
+    private void SubmitComplete() {
+        //todo now update something to class Resource (or if you don't like, do it in onDestroy) ?
+
+        finish();
+    }
+
     @Override
     protected void onDestroy() {
-        //todo save something to class Resource
         super.onDestroy();
     }
 }
