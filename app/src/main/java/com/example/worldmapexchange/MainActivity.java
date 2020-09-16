@@ -10,16 +10,19 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.Iterator;
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -58,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
             if (Resources.targetList == null)
                 return;
             else {
-                AllObjectAdapter allObjectAdapter = new AllObjectAdapter(this.getApplicationContext(), Resources.targetList);
-                lv.setAdapter(allObjectAdapter);
+                AllObjectAdapter currencyInfoAdapter = new AllObjectAdapter(this.getApplicationContext(), Resources.targetList);
+                lv.setAdapter(currencyInfoAdapter);
             }
         }
     }
@@ -127,8 +130,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onAddButtonClick(View view) {
-        //Intent intent = new Intent(view.getContext(), ...);
-        //startActivityForResult(intent, CHOOSE_TARGET_REQUEST);
+        Intent intent = new Intent(view.getContext(), GoogleMapActivity.class);
+        startActivityForResult(intent, CHOOSE_TARGET_REQUEST);
     }
 
     public void numpadClick(View view) {
@@ -317,8 +320,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onChangeBaseClick(View view) {
-        //Intent intent = new Intent(view.getContext(), ...);
-        //startActivityForResult(intent, CHOOSE_BASE_REQUEST);
+        Intent intent = new Intent(view.getContext(), thanhActivity.class);
+        startActivityForResult(intent, CHOOSE_BASE_REQUEST);
     }
 
     private class OkHttpHandler extends AsyncTask<String, Void, String>
@@ -366,13 +369,13 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d("value base =", String.valueOf(baseToUSD));
 //                Toast.makeText(MainActivity.getInstance().getApplicationContext(), String.valueOf(baseToUSD), LENGTH_SHORT).show();
                 ListView lv = MainActivity.getInstance().findViewById(R.id.currencyList);
-                AllObjectAdapter allObjectAdapter = (AllObjectAdapter) lv.getAdapter();
-                if (allObjectAdapter == null) return;
-                for (int i = 0; i < allObjectAdapter.getCount(); ++i)
+                AllObjectAdapter currencyInfoAdapter = (AllObjectAdapter) lv.getAdapter();
+                if (currencyInfoAdapter == null) return;
+                for (int i = 0; i < currencyInfoAdapter.getCount(); ++i)
                 {
-                    allObjectAdapter.getItem(i).value = convert(baseToUSD, allObjectAdapter.getItem(i).code, ratesObj, 1);
+                    currencyInfoAdapter.getItem(i).value = convert(baseToUSD, currencyInfoAdapter.getItem(i).code, ratesObj, 1);
                 }
-                allObjectAdapter.notifyDataSetChanged();
+                currencyInfoAdapter.notifyDataSetChanged();
             }
             catch (Exception e)
             {

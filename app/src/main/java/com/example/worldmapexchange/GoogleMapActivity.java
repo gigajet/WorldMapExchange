@@ -9,7 +9,9 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,15 +19,19 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -39,8 +45,8 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
     private Geocoder mGeocoder;
     private TextView mTvCountryName;
     private OkHttpClient okHttpClient;
-    private ArrayList<AllObject> mCurrencyInfos;
-
+    private ArrayList<AllObject> mAllObjects;
+    private Marker mMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,7 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        mMarker=null;
         mapFragment.getMapAsync(this);
         mGeocoder=new Geocoder(this, Locale.getDefault());
         mTvCountryName=findViewById(R.id.tvCountryName);
@@ -85,10 +92,20 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
     @Override
     public void onMapClick(LatLng latLng) {
         mChosenLocation=latLng;
+        if (mMarker != null) {
+            mMarker.remove();
+        }
+        MarkerOptions markerOption = new MarkerOptions()
+                .position(latLng);
+        mMarker = mMap.addMarker(markerOption);
         //Get the country at mChosenLocation (prefer AsyncTask)
         //Update marker and selected country name
-        new AsyncTaskUpdateChosenLocation().execute(mChosenLocation);
 
+        //Disable submit button
+        Button button=findViewById(R.id.btnSubmit);
+        button.setEnabled(false);
+
+        new AsyncTaskUpdateChosenLocation().execute(mChosenLocation);
     }
 
     public void btnSubmitOnClick(View view) {
@@ -102,7 +119,7 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         }
         else {
             //todo call API to get destination currencies?
-            AsyncTaskGetCurrencyInfo task=new AsyncTaskGetCurrencyInfo();
+            AsyncTaskGetAllObject task=new AsyncTaskGetAllObject();
             task.execute(mChosenLocationAddress.getCountryCode());
         }
     }
@@ -129,13 +146,27 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         protected void onPostExecute(Address address) {
             //never prune out information.
             mChosenLocationAddress = address;
-            if (address != null)
-                mTvCountryName.setText(address.getCountryName());
+            if (address != null) {
+                String countryName = address.getCountryName();
+                if (countryName != null)
+                    mTvCountryName.setText(countryName);
+                else {
+                    mChosenLocationAddress = null;
+                    mTvCountryName.setText("Not a country. Please select a country");
+                }
+            }
             else mTvCountryName.setText("Not a country. Please select a country");
+            //Enable submit button
+            EnableSubmitButton();
         }
     }
 
-    class AsyncTaskGetCurrencyInfo extends AsyncTask<String, Void, ArrayList<AllObject> > {
+    private void EnableSubmitButton() {
+        Button button=findViewById(R.id.btnSubmit);
+        button.setEnabled(true);
+    }
+
+    class AsyncTaskGetAllObject extends AsyncTask<String, Void, ArrayList<AllObject> > {
 
         @Override
         protected ArrayList<AllObject> doInBackground(String... strings) {
@@ -159,32 +190,39 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(),
-                            "AsyncTaskGetCurrencyInfo.doInBackground error JSON nhu cac", Toast.LENGTH_SHORT)
-                            .show();
+                    //Toast.makeText(getApplicationContext(),
+                    //        "AsyncTaskGetAllObject.doInBackground error JSON nhu cac", Toast.LENGTH_SHORT)
+                    //        .show();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(),
-                            "AsyncTaskGetCurrencyInfo.doInBackground error", Toast.LENGTH_SHORT)
-                            .show();
+                    //Toast.makeText(getApplicationContext(),
+                    //        "AsyncTaskGetAllObject.doInBackground error", Toast.LENGTH_SHORT)
+                    //        .show();
                 }
             }
             return ans;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<AllObject> currencyInfos) {
+        protected void onPostExecute(ArrayList<AllObject> AllObjects) {
             //Currency info successfully
-            mCurrencyInfos = currencyInfos;
+            mAllObjects = AllObjects;
             SubmitComplete();
-            //super.onPostExecute(currencyInfos);
+            //super.onPostExecute(AllObjects);
         }
     }
 
     private void SubmitComplete() {
         //todo now update something to class Resource (or if you don't like, do it in onDestroy) ?
-
+        Resources.targetList = mAllObjects;
+        setResult(RESULT_OK);
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
     }
 
     @Override

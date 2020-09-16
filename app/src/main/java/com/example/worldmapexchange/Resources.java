@@ -32,7 +32,7 @@ public class Resources {
     public String baseCurrency = "USD";
     public static ArrayList<AllObject> targetList;
 
-    public AllObject chosenCurrency = null; //chosen base currency
-    public ArrayList<AllObject> allBaseCurrency = null; //all currency list
+    public AllObject chosenBase = null; //chosen base currency
+    public ArrayList<AllObject> allBase = null; //all currency list
     public AllObject baseCurrencyAPI; //base rate from API
 }

@@ -13,7 +13,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:allowBackup="true"
@@ -26,11 +25,11 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:usesCleartextTraffic="true">
 
-        <activity android:name=".thanhActivity">
+        <activity android:name=".thanhActivity"
+            android:screenOrientation="portrait">
 
         </activity>
 
-        android:theme="@style/AppTheme">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -46,8 +45,10 @@
 
         <activity
             android:name=".GoogleMapActivity"
-            android:label="@string/title_activity_google_map"></activity>
-        <activity android:name=".MainActivity">
+            android:label="@string/title_activity_google_map"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Currency;
@@ -31,7 +33,7 @@ public class thanhActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thanh);
-        if (resources.allBaseCurrency == null)
+        if (resources.allBase == null)
             (new GetOnlineRate(this)).execute();
         else
             updateCurrency();
@@ -44,7 +46,7 @@ public class thanhActivity extends AppCompatActivity {
 
     private void updateCurrency() {
         ListView listView = findViewById(R.id.thanhListView);
-        thanhCurrencyAdapter = new thanhCurrencyAdapter(this,0,resources.allBaseCurrency);
+        thanhCurrencyAdapter = new thanhCurrencyAdapter(this,0,resources.allBase);
         listView.setAdapter(thanhCurrencyAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -61,7 +63,8 @@ public class thanhActivity extends AppCompatActivity {
     }
 
     private void finishWork(int position) {
-        resources.chosenCurrency = resources.allBaseCurrency.get(position);
+        resources.chosenBase = resources.allBase.get(position);
+        resources.baseCurrency = resources.chosenBase.code;
         setResult(MainActivity.RESULT_OK);
         finish();
     }
@@ -108,9 +111,9 @@ public class thanhActivity extends AppCompatActivity {
                     key = keys.next();
                     src = "image/"+key+".svg";
                     name = Currency.getInstance(key).getDisplayName();
-                    res.add(new AllObject(key,name,src,0.0));
+                    res.add(new AllObject(name,key,src,0.0));
                     if (base_rate.equals(key)){
-                        AllObject tmpcur = new AllObject(key,name,src,0.0);
+                        AllObject tmpcur = new AllObject(name,key,src,0.0);
                         resources.baseCurrencyAPI = tmpcur;
                     }
                 }
@@ -122,11 +125,11 @@ public class thanhActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(ArrayList<AllObject> res) {
-            if (resources.allBaseCurrency != null) {
-                resources.allBaseCurrency.clear();
-                resources.allBaseCurrency = null;
+            if (resources.allBase != null) {
+                resources.allBase.clear();
+                resources.allBase = null;
             }
-            resources.allBaseCurrency = new ArrayList<>(res);
+            resources.allBase = new ArrayList<>(res);
             if (dialog.isShowing())
                 dialog.dismiss();
             updateCurrency();
