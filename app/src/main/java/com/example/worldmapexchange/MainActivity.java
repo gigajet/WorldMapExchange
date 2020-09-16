@@ -49,19 +49,19 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == CHOOSE_BASE_REQUEST) {
             if (resultCode != RESULT_OK) return;
-            TextView base1 = (TextView) findViewById(R.id.txt_Base_1);
-            TextView base2 = (TextView) findViewById(R.id.txt_Base_2);
+            TextView base1 = findViewById(R.id.txt_Base_1);
+            TextView base2 = findViewById(R.id.txt_Base_2);
 
             base1.setText(Resources.getInstance().baseCurrency);
             base2.setText(Resources.getInstance().baseCurrency);
         }
         if (requestCode == CHOOSE_TARGET_REQUEST) {
             if (resultCode != RESULT_OK) return;
-            ListView lv = (ListView) findViewById(R.id.currencyList);
+            ListView lv = findViewById(R.id.currencyList);
             if (Resources.targetList == null)
                 return;
             else {
-                CurrencyInfoAdapter currencyInfoAdapter = new CurrencyInfoAdapter(this.getApplicationContext(), Resources.targetList);
+                AllObjectAdapter currencyInfoAdapter = new AllObjectAdapter(this.getApplicationContext(), Resources.targetList);
                 lv.setAdapter(currencyInfoAdapter);
             }
         }
@@ -109,11 +109,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setUpBackButton() {
-        ImageView backButton = (ImageView) findViewById(R.id.btn_back);
+        ImageView backButton = findViewById(R.id.btn_back);
         backButton.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                TextView txt = (TextView)MainActivity.getInstance().findViewById(R.id.txt_Expression);
+                TextView txt = MainActivity.getInstance().findViewById(R.id.txt_Expression);
                 txt.setText("0");
                 return true;
             }
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onBackspaceClick(View view) {
-        TextView curStr = (TextView)findViewById(R.id.txt_Expression);
+        TextView curStr = findViewById(R.id.txt_Expression);
         String cur = curStr.getText().toString();
         if (cur.length() <= 1)
             curStr.setText("0");
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void numpadClick(View view) {
         String num = ((TextView)view).getText().toString();
-        TextView curStr = (TextView)findViewById(R.id.txt_Expression);
+        TextView curStr = findViewById(R.id.txt_Expression);
         if (curStr.getText().toString().equals("0") && !num.equals("."))
             curStr.setText(num);
         else
@@ -144,11 +144,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onConvertClick(View view) {
-        TextView expression = (TextView)findViewById(R.id.txt_Expression);
+        TextView expression = findViewById(R.id.txt_Expression);
         String base = ((TextView)findViewById(R.id.txt_Base_1)).getText().toString();
         double result = MainActivity.eval(expression.getText().toString());
         if (!MainActivity.isValid) result = 0.0;
-        TextView txtResult = (TextView)findViewById(R.id.txt_Exp_Result);
+        TextView txtResult = findViewById(R.id.txt_Exp_Result);
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMaximumFractionDigits(4);
         nf.setMinimumFractionDigits(2);
@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onExpressionClick(View view) {
-        TextView curStr = (TextView)findViewById(R.id.txt_Expression);
+        TextView curStr = findViewById(R.id.txt_Expression);
         switch (view.getId())
         {
             case R.id.btn_sub:
@@ -368,8 +368,8 @@ public class MainActivity extends AppCompatActivity {
                 double baseToUSD = convert(amount, base, ratesObj, 0);
 //                Log.d("value base =", String.valueOf(baseToUSD));
 //                Toast.makeText(MainActivity.getInstance().getApplicationContext(), String.valueOf(baseToUSD), LENGTH_SHORT).show();
-                ListView lv = (ListView)MainActivity.getInstance().findViewById(R.id.currencyList);
-                CurrencyInfoAdapter currencyInfoAdapter = (CurrencyInfoAdapter) lv.getAdapter();
+                ListView lv = MainActivity.getInstance().findViewById(R.id.currencyList);
+                AllObjectAdapter currencyInfoAdapter = (AllObjectAdapter) lv.getAdapter();
                 if (currencyInfoAdapter == null) return;
                 for (int i = 0; i < currencyInfoAdapter.getCount(); ++i)
                 {

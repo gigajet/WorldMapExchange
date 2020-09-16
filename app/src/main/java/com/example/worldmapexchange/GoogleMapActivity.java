@@ -45,7 +45,7 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
     private Geocoder mGeocoder;
     private TextView mTvCountryName;
     private OkHttpClient okHttpClient;
-    private ArrayList<CurrencyInfo> mCurrencyInfos;
+    private ArrayList<AllObject> mAllObjects;
     private Marker mMarker;
 
     @Override
@@ -98,8 +98,8 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         MarkerOptions markerOption = new MarkerOptions()
                 .position(latLng);
         mMarker = mMap.addMarker(markerOption);
-                //Get the country at mChosenLocation (prefer AsyncTask)
-                //Update marker and selected country name
+        //Get the country at mChosenLocation (prefer AsyncTask)
+        //Update marker and selected country name
 
         //Disable submit button
         Button button=findViewById(R.id.btnSubmit);
@@ -119,7 +119,7 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         }
         else {
             //todo call API to get destination currencies?
-            AsyncTaskGetCurrencyInfo task=new AsyncTaskGetCurrencyInfo();
+            AsyncTaskGetAllObject task=new AsyncTaskGetAllObject();
             task.execute(mChosenLocationAddress.getCountryCode());
         }
     }
@@ -166,11 +166,11 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         button.setEnabled(true);
     }
 
-    class AsyncTaskGetCurrencyInfo extends AsyncTask<String, Void, ArrayList<CurrencyInfo> > {
+    class AsyncTaskGetAllObject extends AsyncTask<String, Void, ArrayList<AllObject> > {
 
         @Override
-        protected ArrayList<CurrencyInfo> doInBackground(String... strings) {
-            ArrayList<CurrencyInfo> ans = new ArrayList<>();
+        protected ArrayList<AllObject> doInBackground(String... strings) {
+            ArrayList<AllObject> ans = new ArrayList<>();
             for (String countryCode : strings) {
                 Request request = new Request.Builder()
                         .url("https://restcountries.eu/rest/v2/alpha/" + countryCode)
@@ -185,18 +185,18 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
                         String name = aCurrency.getString("name");
                         String src = code + ".svg";
                         double value = 0.0;
-                        CurrencyInfo cf = new CurrencyInfo(name, code, src, value);
+                        AllObject cf = new AllObject(name, code, src, value);
                         ans.add(cf);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     //Toast.makeText(getApplicationContext(),
-                    //        "AsyncTaskGetCurrencyInfo.doInBackground error JSON nhu cac", Toast.LENGTH_SHORT)
+                    //        "AsyncTaskGetAllObject.doInBackground error JSON nhu cac", Toast.LENGTH_SHORT)
                     //        .show();
                 } catch (IOException e) {
                     e.printStackTrace();
                     //Toast.makeText(getApplicationContext(),
-                    //        "AsyncTaskGetCurrencyInfo.doInBackground error", Toast.LENGTH_SHORT)
+                    //        "AsyncTaskGetAllObject.doInBackground error", Toast.LENGTH_SHORT)
                     //        .show();
                 }
             }
@@ -204,17 +204,17 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         }
 
         @Override
-        protected void onPostExecute(ArrayList<CurrencyInfo> currencyInfos) {
+        protected void onPostExecute(ArrayList<AllObject> AllObjects) {
             //Currency info successfully
-            mCurrencyInfos = currencyInfos;
+            mAllObjects = AllObjects;
             SubmitComplete();
-            //super.onPostExecute(currencyInfos);
+            //super.onPostExecute(AllObjects);
         }
     }
 
     private void SubmitComplete() {
         //todo now update something to class Resource (or if you don't like, do it in onDestroy) ?
-        Resources.targetList = mCurrencyInfos;
+        Resources.targetList = mAllObjects;
         setResult(RESULT_OK);
         finish();
     }

@@ -33,7 +33,7 @@ public class thanhActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thanh);
-        if (resources.allBaseCurrency == null)
+        if (resources.allBase == null)
             (new GetOnlineRate(this)).execute();
         else
             updateCurrency();
@@ -46,7 +46,7 @@ public class thanhActivity extends AppCompatActivity {
 
     private void updateCurrency() {
         ListView listView = findViewById(R.id.thanhListView);
-        thanhCurrencyAdapter = new thanhCurrencyAdapter(this,0,resources.allBaseCurrency);
+        thanhCurrencyAdapter = new thanhCurrencyAdapter(this,0,resources.allBase);
         listView.setAdapter(thanhCurrencyAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -63,18 +63,18 @@ public class thanhActivity extends AppCompatActivity {
     }
 
     private void finishWork(int position) {
-        resources.chosenCurrency = resources.allBaseCurrency.get(position);
-        resources.baseCurrency = resources.chosenCurrency.code;
+        resources.chosenBase = resources.allBase.get(position);
+        resources.baseCurrency = resources.chosenBase.code;
         setResult(MainActivity.RESULT_OK);
         finish();
     }
 
 
-    private class GetOnlineRate extends AsyncTask<Void,Void, ArrayList<CurrencyInfo>>
+    private class GetOnlineRate extends AsyncTask<Void,Void, ArrayList<AllObject>>
     {
         final String website = "http://data.fixer.io/api/latest?access_key=ab9075a61fa7f94a67dffe484a6247a2";
         String URLcontent = "";
-        ArrayList<CurrencyInfo> res = new ArrayList<>();
+        ArrayList<AllObject> res = new ArrayList<>();
         private ProgressDialog dialog;
 
         public GetOnlineRate(Activity activity) {
@@ -88,7 +88,7 @@ public class thanhActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<CurrencyInfo> doInBackground(Void... voids) {
+        protected ArrayList<AllObject> doInBackground(Void... voids) {
             try {
                 URL url = new URL(website);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -111,9 +111,9 @@ public class thanhActivity extends AppCompatActivity {
                     key = keys.next();
                     src = "image/"+key+".svg";
                     name = Currency.getInstance(key).getDisplayName();
-                    res.add(new CurrencyInfo(name,key,src,0.0));
+                    res.add(new AllObject(name,key,src,0.0));
                     if (base_rate.equals(key)){
-                        CurrencyInfo tmpcur = new CurrencyInfo(name,key,src,0.0);
+                        AllObject tmpcur = new AllObject(name,key,src,0.0);
                         resources.baseCurrencyAPI = tmpcur;
                     }
                 }
@@ -124,12 +124,12 @@ public class thanhActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<CurrencyInfo> res) {
-            if (resources.allBaseCurrency != null) {
-                resources.allBaseCurrency.clear();
-                resources.allBaseCurrency = null;
+        protected void onPostExecute(ArrayList<AllObject> res) {
+            if (resources.allBase != null) {
+                resources.allBase.clear();
+                resources.allBase = null;
             }
-            resources.allBaseCurrency = new ArrayList<>(res);
+            resources.allBase = new ArrayList<>(res);
             if (dialog.isShowing())
                 dialog.dismiss();
             updateCurrency();
