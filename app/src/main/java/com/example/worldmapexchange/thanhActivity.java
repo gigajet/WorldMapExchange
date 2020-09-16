@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Currency;
@@ -69,11 +67,11 @@ public class thanhActivity extends AppCompatActivity {
     }
 
 
-    private class GetOnlineRate extends AsyncTask<Void,Void, ArrayList<CurrencyInfo>>
+    private class GetOnlineRate extends AsyncTask<Void,Void, ArrayList<AllObject>>
     {
         final String website = "http://data.fixer.io/api/latest?access_key=ab9075a61fa7f94a67dffe484a6247a2";
         String URLcontent = "";
-        ArrayList<CurrencyInfo> res = new ArrayList<>();
+        ArrayList<AllObject> res = new ArrayList<>();
         private ProgressDialog dialog;
 
         public GetOnlineRate(Activity activity) {
@@ -87,7 +85,7 @@ public class thanhActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<CurrencyInfo> doInBackground(Void... voids) {
+        protected ArrayList<AllObject> doInBackground(Void... voids) {
             try {
                 URL url = new URL(website);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -110,9 +108,9 @@ public class thanhActivity extends AppCompatActivity {
                     key = keys.next();
                     src = "image/"+key+".svg";
                     name = Currency.getInstance(key).getDisplayName();
-                    res.add(new CurrencyInfo(key,name,src,0.0));
+                    res.add(new AllObject(key,name,src,0.0));
                     if (base_rate.equals(key)){
-                        CurrencyInfo tmpcur = new CurrencyInfo(key,name,src,0.0);
+                        AllObject tmpcur = new AllObject(key,name,src,0.0);
                         resources.baseCurrencyAPI = tmpcur;
                     }
                 }
@@ -123,7 +121,7 @@ public class thanhActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<CurrencyInfo> res) {
+        protected void onPostExecute(ArrayList<AllObject> res) {
             if (resources.allBaseCurrency != null) {
                 resources.allBaseCurrency.clear();
                 resources.allBaseCurrency = null;

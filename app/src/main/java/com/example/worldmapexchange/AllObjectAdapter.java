@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,8 +19,8 @@ import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-public class CurrencyInfoAdapter extends ArrayAdapter<CurrencyInfo> {
-    public CurrencyInfoAdapter(Context context, ArrayList<CurrencyInfo> currencyInfoArrayList)
+public class AllObjectAdapter extends ArrayAdapter<AllObject> {
+    public AllObjectAdapter(Context context, ArrayList<AllObject> currencyInfoArrayList)
     {
         super(context, 0, currencyInfoArrayList);
     }
@@ -37,7 +36,7 @@ public class CurrencyInfoAdapter extends ArrayAdapter<CurrencyInfo> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        CurrencyInfo currencyInfo = getItem(position);
+        AllObject currencyInfo = getItem(position);
         ViewHolder viewHolder;
 
 
@@ -47,9 +46,9 @@ public class CurrencyInfoAdapter extends ArrayAdapter<CurrencyInfo> {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(this.getContext());
             convertView = inflater.inflate(R.layout.item_layout1, parent, false);
-            viewHolder.txtName = (TextView)convertView.findViewById(R.id.textViewName);
-            viewHolder.im = (SVGImageView)convertView.findViewById(R.id.imageView);
-            viewHolder.resText = (TextView)convertView.findViewById(R.id.resText);
+            viewHolder.txtName = convertView.findViewById(R.id.textViewName);
+            viewHolder.im = convertView.findViewById(R.id.imageView);
+            viewHolder.resText = convertView.findViewById(R.id.resText);
             convertView.setTag(viewHolder);
         }
         else

@@ -9,7 +9,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Telephony;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,11 +23,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -42,7 +39,7 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
     private Geocoder mGeocoder;
     private TextView mTvCountryName;
     private OkHttpClient okHttpClient;
-    private ArrayList<CurrencyInfo> mCurrencyInfos;
+    private ArrayList<AllObject> mCurrencyInfos;
 
 
     @Override
@@ -138,11 +135,11 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         }
     }
 
-    class AsyncTaskGetCurrencyInfo extends AsyncTask<String, Void, ArrayList<CurrencyInfo> > {
+    class AsyncTaskGetCurrencyInfo extends AsyncTask<String, Void, ArrayList<AllObject> > {
 
         @Override
-        protected ArrayList<CurrencyInfo> doInBackground(String... strings) {
-            ArrayList<CurrencyInfo> ans = new ArrayList<>();
+        protected ArrayList<AllObject> doInBackground(String... strings) {
+            ArrayList<AllObject> ans = new ArrayList<>();
             for (String countryCode : strings) {
                 Request request = new Request.Builder()
                         .url("https://restcountries.eu/rest/v2/alpha/" + countryCode)
@@ -157,7 +154,7 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
                         String name = aCurrency.getString("name");
                         String src = code + ".svg";
                         double value = 0.0;
-                        CurrencyInfo cf = new CurrencyInfo(name, code, src, value);
+                        AllObject cf = new AllObject(name, code, src, value);
                         ans.add(cf);
                     }
                 } catch (JSONException e) {
@@ -176,7 +173,7 @@ public class GoogleMapActivity extends FragmentActivity implements OnMapReadyCal
         }
 
         @Override
-        protected void onPostExecute(ArrayList<CurrencyInfo> currencyInfos) {
+        protected void onPostExecute(ArrayList<AllObject> currencyInfos) {
             //Currency info successfully
             mCurrencyInfos = currencyInfos;
             SubmitComplete();

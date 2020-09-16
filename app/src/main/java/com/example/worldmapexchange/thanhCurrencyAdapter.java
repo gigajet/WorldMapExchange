@@ -1,7 +1,6 @@
 package com.example.worldmapexchange;
 
 import android.content.Context;
-import android.database.CursorIndexOutOfBoundsException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +15,9 @@ import com.caverock.androidsvg.SVGImageView;
 
 import java.util.List;
 
-public class thanhCurrencyAdapter extends ArrayAdapter<CurrencyInfo> {
+public class thanhCurrencyAdapter extends ArrayAdapter<AllObject> {
 
-    public thanhCurrencyAdapter(@NonNull Context context, int resource, @NonNull List<CurrencyInfo> objects) {
+    public thanhCurrencyAdapter(@NonNull Context context, int resource, @NonNull List<AllObject> objects) {
         super(context, resource, objects);
     }
 
@@ -32,7 +31,7 @@ public class thanhCurrencyAdapter extends ArrayAdapter<CurrencyInfo> {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        CurrencyInfo currencyInfo = getItem(position);
+        AllObject currencyInfo = getItem(position);
         thanhCurrencyAdapter.ViewHolder viewHolder;
 
         if (convertView == null)
