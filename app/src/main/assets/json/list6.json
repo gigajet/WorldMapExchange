@@ -1,0 +1,9 @@
+{
+    "mach":"mach",
+    "knot":"knot",
+    "mph":"miles per hour",
+    "fps":"feet per second",
+    "kph":"kilometers per hour",
+    "mps":"meters per second",
+    "cps":"centimeters per second"
+}

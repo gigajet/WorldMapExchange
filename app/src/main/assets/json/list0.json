@@ -1,0 +1,13 @@
+{
+    "nm":"nanometer",
+    "mm":"milimeter",
+    "cm":"centimeter",
+    "dm":"decimeter",
+    "m":"meter",
+    "km":"kilometer",
+    "ft":"foot/feet",
+    "inch":"inch",
+    "ly":"light year",
+    "mile":"mile",
+    "nmi":"nautical mile"
+}
