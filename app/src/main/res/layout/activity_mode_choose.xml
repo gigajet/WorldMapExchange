@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ModeChooseActivity">
+
+    <Button
+        android:id="@+id/btnModeLength"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:onClick="onClickModeChooseButtons"
+        android:text="LENGTH"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnModeArea"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:onClick="onClickModeChooseButtons"
+        android:text="AREA"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnModeMass"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:onClick="onClickModeChooseButtons"
+        android:text="MASS"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnModeTemperature"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:onClick="onClickModeChooseButtons"
+        android:text="TEMPERATURE"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnModeAngle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:onClick="onClickModeChooseButtons"
+        android:text="ANGLE"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnModeEnergy"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:onClick="onClickModeChooseButtons"
+        android:text="ENERGY"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnModeSpeed"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:onClick="onClickModeChooseButtons"
+        android:text="SPEED"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnModeTime"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:onClick="onClickModeChooseButtons"
+        android:text="TIME"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnModeBase"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:onClick="onClickModeChooseButtons"
+        android:text="BASE"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/btnModeCurrency"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:onClick="onClickModeChooseButtons"
+        android:text="CURRENCY"
+        android:textSize="24sp" />
+
+</LinearLayout>
