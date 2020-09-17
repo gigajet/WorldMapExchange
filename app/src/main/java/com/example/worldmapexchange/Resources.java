@@ -29,7 +29,7 @@ public class Resources {
     public static Resources getInstance(){
         return RESOURCES;
     }
-    public String baseCurrency = "USD";
+    public String baseChosen = "USD";
     public static ArrayList<AllObject> targetList;
 
     public AllObject chosenBase = null; //chosen base currency
