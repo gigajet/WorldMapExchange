@@ -18,10 +18,10 @@ public class Resources {
     private static final Resources RESOURCES = new Resources();
     //private constructor to avoid client applications to use constructor
 
-    public static int chosenMode = 9;
+    public static int chosenMode = 0;
 
     public static String[] defaultBase = {"m", "m2", "kg", "C", "rad", "J", "m/s", "sec", "base 2", "USD"};
-    public static String[] defaultRateBase = {"m", "m2", "kg", "C", "C", "J", "mach", "y", "base 2", "USD"};
+    //public static String[] defaultRateBase = {"m", "m2", "kg", "C", "C", "J", "mach", "y", "base 2", "USD"};
 
     private Resources()
     {
@@ -31,7 +31,9 @@ public class Resources {
         return RESOURCES;
     }
     public String baseChosen = "USD";
-    public static ArrayList<AllObject> targetList;
+    public static ArrayList<AllObject> targetList = new ArrayList<AllObject>(){{
+        add(new AllObject("centimeter", "cm", "cm.svg", 0.0));
+    }};
 
     public AllObject chosenBase = null; //chosen base currency
     public ArrayList<AllObject> allBase = null; //all currency list

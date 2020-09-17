@@ -107,6 +107,9 @@ public class MainActivity extends AppCompatActivity {
         SetUpContext();
         setUpBackButton();
         initNumPad();
+        ListView lv = findViewById(R.id.currencyList);
+        AllObjectAdapter currencyInfoAdapter = new AllObjectAdapter(this.getApplicationContext(), Resources.targetList);
+        lv.setAdapter(currencyInfoAdapter);
     }
 
     private void SetUpContext() {
