@@ -190,12 +190,26 @@ public class MainActivity extends AppCompatActivity {
 
         int mode = Resources.chosenMode;
 
+        ListView lv = MainActivity.getInstance().findViewById(R.id.currencyList);
+        AllObjectAdapter currencyInfoAdapter = (AllObjectAdapter) lv.getAdapter();
+        if (currencyInfoAdapter == null) return;
+
         switch (mode)
         {
+            case Resources.BASE_MODE:
+                break;
             case Resources.CURRENCY_MODE:
                 String baseurl = "https://currency.labstack.com/api/v1/rates";
                 String apiKey = "bjoVn986JOKvV8BXyGmMeaRq0sTBnlGI203NF68b7mRXqB-0zpbLt";
                 (new OkHttpHandler(result, base)).execute(baseurl, apiKey);
+                break;
+            default:
+                for (int i = 0; i < currencyInfoAdapter.getCount(); ++i)
+                {
+                    currencyInfoAdapter.getItem(i).value = Converter.Convert(mode, base, currencyInfoAdapter.getItem(i).code, result);
+                }
+                //double res = Converter.Convert(mode, base, )
+                currencyInfoAdapter.notifyDataSetChanged();
                 break;
         }
     }

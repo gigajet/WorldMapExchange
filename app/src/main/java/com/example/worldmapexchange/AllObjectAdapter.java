@@ -57,7 +57,10 @@ public class AllObjectAdapter extends ArrayAdapter<AllObject> {
         }
 
         viewHolder.txtName.setText(currencyInfo.code + "(" + currencyInfo.name + ")");
-        viewHolder.im.setImageAsset("image/"+currencyInfo.src);
+        if (Resources.chosenMode == 9)
+            viewHolder.im.setImageAsset("image/" + currencyInfo.src);
+        else
+            viewHolder.im.setImageAsset("image/blank.svg");
         viewHolder.im.setScaleX(1);
         viewHolder.im.setScaleY(1);
 //
