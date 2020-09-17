@@ -130,7 +130,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onAddButtonClick(View view) {
-        Intent intent = new Intent(view.getContext(), GoogleMapActivity.class);
+        Intent intent;
+        if (Resources.getInstance().chosenMode==Resources.CURRENCY_MODE)
+            intent = new Intent(view.getContext(), GoogleMapActivity.class);
+        else
+            intent = new Intent(view.getContext(), TargetChooseActivity.class);
         startActivityForResult(intent, CHOOSE_TARGET_REQUEST);
     }
 
