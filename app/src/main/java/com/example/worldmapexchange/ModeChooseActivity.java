@@ -2,6 +2,7 @@ package com.example.worldmapexchange;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -46,5 +47,7 @@ public class ModeChooseActivity extends AppCompatActivity {
                 Resources.getInstance().chosenMode=9;
                 break;
         }
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
