@@ -31,9 +31,7 @@ public class Resources {
         return RESOURCES;
     }
     public String baseChosen = "USD";
-    public static ArrayList<AllObject> targetList = new ArrayList<AllObject>(){{
-        add(new AllObject("centimeter", "cm", "cm.svg", 0.0));
-    }};
+    public static ArrayList<AllObject> targetList;
 
     public AllObject chosenBase = null; //chosen base currency
     public ArrayList<AllObject> allBase = null; //all currency list
