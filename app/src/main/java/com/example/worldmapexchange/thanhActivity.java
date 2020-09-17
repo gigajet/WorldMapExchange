@@ -33,10 +33,54 @@ public class thanhActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thanh);
-        if (resources.allBase == null)
-            (new GetOnlineRate(this)).execute();
-        else
-            updateCurrency();
+        AdaptMode();
+    }
+
+    private void AdaptMode()
+    {
+        if (resources.chosenMode == resources.LENGTH_MODE)
+        {
+
+        }
+        else if (resources.chosenMode == resources.AREA_MODE)
+        {
+
+        }
+        else if (resources.chosenMode == resources.MASS_MODE)
+        {
+
+        }
+        else if (resources.chosenMode == resources.TEMPERATURE_MODE)
+        {
+
+        }
+        else if (resources.chosenMode == resources.ANGLE_MODE)
+        {
+
+        }
+        else if (resources.chosenMode == resources.ENERGY_MODE)
+        {
+
+        }
+        else if (resources.chosenMode == resources.SPEED_MODE)
+        {
+
+        }
+        else if (resources.chosenMode == resources.TIME_MODE)
+        {
+
+        }
+        else if (resources.chosenMode == resources.BASE_MODE)
+        {
+
+        }
+        else if (resources.chosenMode == resources.CURRENCY_MODE)
+        {
+            if (resources.allBase == null)
+                (new GetOnlineRate(this)).execute();
+            else
+                updateCurrency();
+        }
     }
 
     @Override
