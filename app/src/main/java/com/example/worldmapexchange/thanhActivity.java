@@ -15,6 +15,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,7 +29,8 @@ import java.util.Currency;
 import java.util.Iterator;
 
 public class thanhActivity extends AppCompatActivity {
-    private thanhCurrencyAdapter thanhCurrencyAdapter =null;
+    private thanhCurrencyAdapter thanhCurrencyAdapter = null;
+    private AllObjectAdapter allObjectAdapter = null;
     private Resources resources = Resources.getInstance();
 
     @Override
@@ -38,48 +42,93 @@ public class thanhActivity extends AppCompatActivity {
 
     private void AdaptMode()
     {
-        if (resources.chosenMode == resources.LENGTH_MODE)
-        {
+        if (resources.chosenMode == resources.CURRENCY_MODE)
+            (new GetOnlineRate(this)).execute();
+        else
+            ReadJsonFile(resources.chosenMode);
+    }
 
-        }
-        else if (resources.chosenMode == resources.AREA_MODE)
-        {
+    private void ReadJsonFile(int id)
+    {
+        String filename = "json/list" + id + ".json";
+        getAll(filename);
+        filename = "json/rate" +id + ".json";
+        getBase(filename);
+        UpdateListView();
+    }
 
-        }
-        else if (resources.chosenMode == resources.MASS_MODE)
-        {
+    private void UpdateListView()
+    {
+        ListView listView = findViewById(R.id.thanhListView);
+        allObjectAdapter = new AllObjectAdapter(this,resources.allBase);
+        listView.setAdapter(allObjectAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                finishWork(position);
+            }
+        });
+    }
 
-        }
-        else if (resources.chosenMode == resources.TEMPERATURE_MODE)
-        {
+    private void getAll(String filename)
+    {
+        try {
+            InputStream inputStream = getBaseContext().getAssets().open(filename);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String tmp = "";
+            String content = "";
+            while (tmp !=null)
+            {
+                tmp = bufferedReader.readLine();
+                content += tmp;
+            }
 
-        }
-        else if (resources.chosenMode == resources.ANGLE_MODE)
-        {
+            ArrayList<AllObject> res = new ArrayList<>();
+            JSONObject jsonObject = new JSONObject(content);
+            Iterator<String> keys = jsonObject.keys();
+            String key="";
+            String name ="";
+            String src = "";
+            while(keys.hasNext()) {
+                key = keys.next();
+                src = "image/USD.svg";
+                name = jsonObject.getString(key);
+                res.add(new AllObject(name, key, src, 0.0));
+            }
+            if (resources.allBase != null) {
+                resources.allBase.clear();
+                resources.allBase = null;
+            }
+            resources.allBase = new ArrayList<>(res);
+            bufferedReader.close();
 
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
-        else if (resources.chosenMode == resources.ENERGY_MODE)
-        {
+    }
 
-        }
-        else if (resources.chosenMode == resources.SPEED_MODE)
-        {
+    private void getBase(String filename)
+    {
+        try {
+            InputStream inputStream = getBaseContext().getAssets().open(filename);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String tmp = "";
+            String content = "";
+            while (tmp !=null)
+            {
+                tmp = bufferedReader.readLine();
+                content += tmp;
+            }
 
-        }
-        else if (resources.chosenMode == resources.TIME_MODE)
-        {
+            JSONObject jsonObject = new JSONObject(content);
+            String key = jsonObject.getString("base");
+            String src = "image/USD.svg";
+            AllObject base = new AllObject("",key,src,0.0);
+            resources.baseCurrencyAPI = base;
 
-        }
-        else if (resources.chosenMode == resources.BASE_MODE)
-        {
-
-        }
-        else if (resources.chosenMode == resources.CURRENCY_MODE)
-        {
-            if (resources.allBase == null)
-                (new GetOnlineRate(this)).execute();
-            else
-                updateCurrency();
+            bufferedReader.close();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -161,6 +210,7 @@ public class thanhActivity extends AppCompatActivity {
                         resources.baseCurrencyAPI = tmpcur;
                     }
                 }
+                bufferedReader.close();
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
