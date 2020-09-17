@@ -17,34 +17,34 @@ public class ModeChooseActivity extends AppCompatActivity {
     public void onClickModeChooseButtons(View view) {
         switch (view.getId()) {
             case R.id.btnModeLength:
-                Resources.getInstance().chosenMode=0;
+                Resources.getInstance().chosenMode=Resources.getInstance().LENGTH_MODE;
                 break;
             case R.id.btnModeArea:
-                Resources.getInstance().chosenMode=1;
+                Resources.getInstance().chosenMode=Resources.getInstance().AREA_MODE;
                 break;
             case R.id.btnModeMass:
-                Resources.getInstance().chosenMode=2;
+                Resources.getInstance().chosenMode=Resources.getInstance().MASS_MODE;
                 break;
             case R.id.btnModeTemperature:
-                Resources.getInstance().chosenMode=3;
+                Resources.getInstance().chosenMode=Resources.getInstance().TEMPERATURE_MODE;
                 break;
             case R.id.btnModeAngle:
-                Resources.getInstance().chosenMode=4;
+                Resources.getInstance().chosenMode=Resources.getInstance().ANGLE_MODE;
                 break;
             case R.id.btnModeEnergy:
-                Resources.getInstance().chosenMode=5;
+                Resources.getInstance().chosenMode=Resources.getInstance().ENERGY_MODE;
                 break;
             case R.id.btnModeSpeed:
-                Resources.getInstance().chosenMode=6;
+                Resources.getInstance().chosenMode=Resources.getInstance().SPEED_MODE;
                 break;
             case R.id.btnModeTime:
-                Resources.getInstance().chosenMode=7;
+                Resources.getInstance().chosenMode=Resources.getInstance().TIME_MODE;
                 break;
             case R.id.btnModeBase:
-                Resources.getInstance().chosenMode=8;
+                Resources.getInstance().chosenMode=Resources.getInstance().BASE_MODE;
                 break;
             case R.id.btnModeCurrency:
-                Resources.getInstance().chosenMode=9;
+                Resources.getInstance().chosenMode=Resources.getInstance().CURRENCY_MODE;
                 break;
         }
         Intent intent = new Intent(this, MainActivity.class);
