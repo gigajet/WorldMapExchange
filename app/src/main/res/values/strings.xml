@@ -3,4 +3,5 @@
     <string name="title_activity_google_map">Map</string>
     <string name="btn_submit">Submit</string>
     <string name="hint_choose_country">Choose a country...</string>
+    <string name="add_button_hint">Add new target</string>
 </resources>

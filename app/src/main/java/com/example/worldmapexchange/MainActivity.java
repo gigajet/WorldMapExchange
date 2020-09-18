@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
             TextView base1 = findViewById(R.id.txt_Base_1);
             TextView base2 = findViewById(R.id.txt_Base_2);
 
-            base1.setText(Resources.getInstance().baseCurrency);
-            base2.setText(Resources.getInstance().baseCurrency);
+            base1.setText(Resources.getInstance().baseChosen);
+            base2.setText(Resources.getInstance().baseChosen);
         }
         if (requestCode == CHOOSE_TARGET_REQUEST) {
             if (resultCode != RESULT_OK) return;
@@ -121,8 +121,41 @@ public class MainActivity extends AppCompatActivity {
 
     private void initComponent() {
         MainActivity.isValid = true;
+        SetUpContext();
         setUpBackButton();
         initNumPad();
+//        ListView lv = findViewById(R.id.currencyList);
+//        AllObjectAdapter currencyInfoAdapter = new AllObjectAdapter(this.getApplicationContext(), Resources.targetList);
+//        lv.setAdapter(currencyInfoAdapter);
+    }
+
+    private void SetUpContext() {
+        int mode = Resources.chosenMode;
+        TextView txtBase1 = (TextView)findViewById(R.id.txt_Base_1);
+        TextView txtBase2 = (TextView)findViewById(R.id.txt_Base_2);
+
+        txtBase1.setText(Resources.defaultBase[mode]);
+        txtBase2.setText(Resources.defaultBase[mode]);
+
+        Button btnAdd = (Button)findViewById(R.id.AddCurrency);
+
+        switch (mode)
+        {
+            case Resources.LENGTH_MODE:
+            case Resources.ANGLE_MODE:
+            case Resources.SPEED_MODE:
+            case Resources.AREA_MODE:
+            case Resources.MASS_MODE:
+            case Resources.ENERGY_MODE:
+            case Resources.BASE_MODE:
+            case Resources.TIME_MODE:
+            case Resources.TEMPERATURE_MODE:
+                btnAdd.setText("Choose target unit");
+                break;
+            case Resources.CURRENCY_MODE:
+                btnAdd.setText("Choose country");
+                break;
+        }
     }
 
     private void setUpBackButton() {
@@ -147,7 +180,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onAddButtonClick(View view) {
-        Intent intent = new Intent(view.getContext(), GoogleMapActivity.class);
+        Intent intent;
+        if (Resources.getInstance().chosenMode==Resources.CURRENCY_MODE)
+            intent = new Intent(view.getContext(), GoogleMapActivity.class);
+        else
+            intent = new Intent(view.getContext(), TargetChooseActivity.class);
         startActivityForResult(intent, CHOOSE_TARGET_REQUEST);
     }
 
@@ -175,10 +212,30 @@ public class MainActivity extends AppCompatActivity {
         nf.setMaximumIntegerDigits(56);
         txtResult.setText(nf.format(result));
 
-        String baseurl = "https://currency.labstack.com/api/v1/rates";
-        String apiKey = "bjoVn986JOKvV8BXyGmMeaRq0sTBnlGI203NF68b7mRXqB-0zpbLt";
+        int mode = Resources.chosenMode;
 
-        (new OkHttpHandler(result, base)).execute(baseurl, apiKey);
+        ListView lv = MainActivity.getInstance().findViewById(R.id.currencyList);
+        AllObjectAdapter currencyInfoAdapter = (AllObjectAdapter) lv.getAdapter();
+        if (currencyInfoAdapter == null) return;
+
+        switch (mode)
+        {
+            case Resources.BASE_MODE:
+                break;
+            case Resources.CURRENCY_MODE:
+                String baseurl = "https://currency.labstack.com/api/v1/rates";
+                String apiKey = "bjoVn986JOKvV8BXyGmMeaRq0sTBnlGI203NF68b7mRXqB-0zpbLt";
+                (new OkHttpHandler(result, base)).execute(baseurl, apiKey);
+                break;
+            default:
+                for (int i = 0; i < currencyInfoAdapter.getCount(); ++i)
+                {
+                    currencyInfoAdapter.getItem(i).value = Converter.Convert(mode, base, currencyInfoAdapter.getItem(i).code, result);
+                }
+                //double res = Converter.Convert(mode, base, )
+                currencyInfoAdapter.notifyDataSetChanged();
+                break;
+        }
     }
 
     public void alertDialog(String msg)
