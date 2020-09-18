@@ -1,0 +1,10 @@
+{
+    "y":"years",
+    "w":"weeks",
+    "d":"days",
+    "h":"hours",
+    "m":"minutes",
+    "s":"seconds",
+    "ms":"milliseconds",
+    "us":"microseconds"
+}
