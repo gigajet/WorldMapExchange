@@ -2,12 +2,19 @@ package com.example.worldmapexchange;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,8 +26,12 @@ import android.widget.Toast;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -64,6 +75,25 @@ public class MainActivity extends AppCompatActivity {
                 AllObjectAdapter currencyInfoAdapter = new AllObjectAdapter(this.getApplicationContext(), Resources.targetList);
                 lv.setAdapter(currencyInfoAdapter);
             }
+        }
+        if (requestCode == IMAGE_CAPTURE_REQUEST) {
+            if (resultCode != RESULT_OK) return;
+            //Bitmap bitmap= BitmapFactory.decodeFile(currentPhotoPath);
+            //Now send the image to server. But first,
+            //test for it by opening it.
+
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            File f = new File(currentPhotoPath);
+            Uri contentUri = FileProvider.getUriForFile(MainActivity.this,
+                    "com.example.worldmapexchange.fileprovider", f);
+            mediaScanIntent.setData(contentUri);
+            this.sendBroadcast(mediaScanIntent);
+
+            Intent intent=new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setDataAndType(contentUri,"image/*");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //WITHOUT THIS LINE, NOT FUCKING WORK
+            startActivity(intent);
         }
     }
 
@@ -422,4 +452,71 @@ public class MainActivity extends AppCompatActivity {
             return -10.0;
         }
     }
+
+
+    /*
+    === CAMERA ===
+     */
+
+    public static int PermissionRequestCodeCamera=10;
+    public static final int IMAGE_CAPTURE_REQUEST = 10;
+    public void Camera_Init() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(
+                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PermissionRequestCodeCamera
+            );
+        }
+    }
+
+    public String currentPhotoPath;
+    public Uri mCurrentPhotoUri;
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = MainActivity.getInstance().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void Camera_TakePhoto() {
+        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+            Intent takePictureIntent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                File photoFile=null;
+                try {
+                    photoFile=createImageFile();
+                } catch (IOException e) {
+                    Log.e("MAIN ACTIVITY","CREATE IMAGE FILE ERROR");
+                    e.printStackTrace();
+                }
+
+                if (photoFile!=null) {
+                    Uri photoUri= FileProvider.getUriForFile(this,"com.example.worldmapexchange.fileprovider",
+                            photoFile);
+                    mCurrentPhotoUri=photoUri;
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+                    startActivityForResult(takePictureIntent, IMAGE_CAPTURE_REQUEST);
+                }
+                else {
+                    Log.e ("MAIN ACT", "PHOTOFILE IS NULL");
+                }
+            }
+        }
+        else {
+            Toast.makeText(this, "No camera found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /*
+    === END CAMERA ===
+     */
 }
