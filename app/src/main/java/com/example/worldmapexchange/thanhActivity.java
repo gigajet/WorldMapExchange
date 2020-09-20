@@ -15,6 +15,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,17 +29,107 @@ import java.util.Currency;
 import java.util.Iterator;
 
 public class thanhActivity extends AppCompatActivity {
-    private thanhCurrencyAdapter thanhCurrencyAdapter =null;
+    private thanhCurrencyAdapter thanhCurrencyAdapter = null;
+    private AllObjectAdapter allObjectAdapter = null;
     private Resources resources = Resources.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_thanh);
-        if (resources.allBase == null)
+        AdaptMode();
+    }
+
+    private void AdaptMode()
+    {
+        if (resources.chosenMode == resources.CURRENCY_MODE)
             (new GetOnlineRate(this)).execute();
         else
-            updateCurrency();
+            ReadJsonFile(resources.chosenMode);
+    }
+
+    private void ReadJsonFile(int id)
+    {
+        String filename = "json/list" + id + ".json";
+        getAll(filename);
+        filename = "json/rate" +id + ".json";
+        getBase(filename);
+        UpdateListView();
+    }
+
+    private void UpdateListView()
+    {
+        ListView listView = findViewById(R.id.thanhListView);
+        allObjectAdapter = new AllObjectAdapter(this,resources.allBase);
+        listView.setAdapter(allObjectAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                finishWork(position);
+            }
+        });
+    }
+
+    private void getAll(String filename)
+    {
+        try {
+            InputStream inputStream = getBaseContext().getAssets().open(filename);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String tmp = "";
+            String content = "";
+            while (tmp !=null)
+            {
+                tmp = bufferedReader.readLine();
+                content += tmp;
+            }
+
+            ArrayList<AllObject> res = new ArrayList<>();
+            JSONObject jsonObject = new JSONObject(content);
+            Iterator<String> keys = jsonObject.keys();
+            String key="";
+            String name ="";
+            String src = "";
+            while(keys.hasNext()) {
+                key = keys.next();
+                src = "image/USD.svg";
+                name = jsonObject.getString(key);
+                res.add(new AllObject(name, key, src, 0.0));
+            }
+            if (resources.allBase != null) {
+                resources.allBase.clear();
+                resources.allBase = null;
+            }
+            resources.allBase = new ArrayList<>(res);
+            bufferedReader.close();
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getBase(String filename)
+    {
+        try {
+            InputStream inputStream = getBaseContext().getAssets().open(filename);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String tmp = "";
+            String content = "";
+            while (tmp !=null)
+            {
+                tmp = bufferedReader.readLine();
+                content += tmp;
+            }
+
+            JSONObject jsonObject = new JSONObject(content);
+            String key = jsonObject.getString("base");
+            String src = "image/USD.svg";
+            AllObject base = new AllObject("",key,src,0.0);
+            resources.baseCurrencyAPI = base;
+
+            bufferedReader.close();
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -64,7 +157,7 @@ public class thanhActivity extends AppCompatActivity {
 
     private void finishWork(int position) {
         resources.chosenBase = resources.allBase.get(position);
-        resources.baseCurrency = resources.chosenBase.code;
+        resources.baseChosen = resources.chosenBase.code;
         setResult(MainActivity.RESULT_OK);
         finish();
     }
@@ -117,6 +210,7 @@ public class thanhActivity extends AppCompatActivity {
                         resources.baseCurrencyAPI = tmpcur;
                     }
                 }
+                bufferedReader.close();
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }

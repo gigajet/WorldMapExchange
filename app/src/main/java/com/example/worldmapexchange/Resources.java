@@ -18,9 +18,10 @@ public class Resources {
     private static final Resources RESOURCES = new Resources();
     //private constructor to avoid client applications to use constructor
 
-    public static int chosenMode = 9;
+    public static int chosenMode = 0;
 
-    public static String[] defaultBase = {"m", "m^2", "kg", "C", "rad", "J", "m/s", "sec", "base 2", "USD"};
+    public static String[] defaultBase = {"m", "m2", "kg", "C", "rad", "J", "m/s", "sec", "base 2", "USD"};
+    //public static String[] defaultRateBase = {"m", "m2", "kg", "C", "C", "J", "mach", "y", "base 2", "USD"};
 
     private Resources()
     {
@@ -29,7 +30,7 @@ public class Resources {
     public static Resources getInstance(){
         return RESOURCES;
     }
-    public String baseCurrency = "USD";
+    public String baseChosen = "USD";
     public static ArrayList<AllObject> targetList;
 
     public AllObject chosenBase = null; //chosen base currency
