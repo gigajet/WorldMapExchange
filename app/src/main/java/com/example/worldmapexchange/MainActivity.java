@@ -10,6 +10,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -27,9 +29,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.math.RoundingMode;
@@ -39,8 +43,11 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.widget.Toast.LENGTH_SHORT;
@@ -67,8 +74,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        //start camera intent
-        return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_camera) {
+            Camera_TakePhoto();
+            return true;
+        }
+        else
+            return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -99,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
             //Now send the image to server. But first,
             //test for it by opening it.
 
+            /*
             Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             File f = new File(currentPhotoPath);
             Uri contentUri = FileProvider.getUriForFile(MainActivity.this,
@@ -111,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
             intent.setDataAndType(contentUri,"image/*");
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //WITHOUT THIS LINE, NOT FUCKING WORK
             startActivity(intent);
+            */
+            new AsyncTaskRecognize().execute(currentPhotoPath);
+
         }
     }
 
@@ -589,4 +604,70 @@ public class MainActivity extends AppCompatActivity {
     /*
     === END CAMERA ===
      */
+
+    class AsyncTaskRecognize extends AsyncTask<String,Void,String> {
+        OkHttpClient client;
+        @Override
+        protected void onPreExecute() {
+            client=new OkHttpClient();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            for (String path : strings) {
+                Bitmap bitmap= BitmapFactory.decodeFile(currentPhotoPath);
+                ByteArrayOutputStream bos=new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
+                byte[] bitmapData=bos.toByteArray();
+
+                MediaType contentType= MediaType.get("image/png");
+
+                RequestBody requestBody=RequestBody.create(bitmapData,contentType);
+                RequestBody multipartBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("enctype","multipart/form-data")
+                        .addFormDataPart("file", "file",
+                                RequestBody.create(bitmapData, contentType))
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url("http://192.168.1.122:8000/upload/")   //error if missing trailing /
+                        .post(requestBody)
+                        .build();
+                try {
+                    Response response=client.newCall(request).execute();
+                    String body=response.body().string();
+                    JSONObject jsonObject=new JSONObject(body);
+                    String ans=jsonObject.getString("success");
+                    return ans;
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (s!=null) {
+                AppendResponseToExpression(s);
+                Toast.makeText(MainActivity.this, "RESPONSE APPENDED TO EXPRESSION", LENGTH_SHORT);
+            }
+            else {
+                Toast.makeText(MainActivity.this, "NULL RESPONSE", LENGTH_SHORT);
+            }
+            super.onPostExecute(s);
+            //we may delete the file here to free up space.
+        }
+    }
+
+    private void AppendResponseToExpression(String res) {
+        TextView expression = findViewById(R.id.txt_Expression);
+        String txt=expression.getText().toString();
+        txt+=res;
+        expression.setText(txt);
+    }
+
+
 }
