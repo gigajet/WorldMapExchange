@@ -3,12 +3,21 @@ package com.example.worldmapexchange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,16 +29,26 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static android.widget.Toast.LENGTH_SHORT;
@@ -56,8 +75,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        //start camera intent
-        return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_camera) {
+            Camera_TakePhoto();
+            return true;
+        }
+        else
+            return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -81,6 +104,29 @@ public class MainActivity extends AppCompatActivity {
                 AllObjectAdapter currencyInfoAdapter = new AllObjectAdapter(this.getApplicationContext(), Resources.targetList);
                 lv.setAdapter(currencyInfoAdapter);
             }
+        }
+        if (requestCode == IMAGE_CAPTURE_REQUEST) {
+            if (resultCode != RESULT_OK) return;
+            //Bitmap bitmap= BitmapFactory.decodeFile(currentPhotoPath);
+            //Now send the image to server. But first,
+            //test for it by opening it.
+
+            /*
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            File f = new File(currentPhotoPath);
+            Uri contentUri = FileProvider.getUriForFile(MainActivity.this,
+                    "com.example.worldmapexchange.fileprovider", f);
+            mediaScanIntent.setData(contentUri);
+            this.sendBroadcast(mediaScanIntent);
+
+            Intent intent=new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.setDataAndType(contentUri,"image/*");
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //WITHOUT THIS LINE, NOT FUCKING WORK
+            startActivity(intent);
+            */
+            new AsyncTaskRecognize().execute(currentPhotoPath);
+
         }
     }
 
@@ -532,4 +578,152 @@ public class MainActivity extends AppCompatActivity {
             return -10.0;
         }
     }
+
+
+    /*
+    === CAMERA ===
+     */
+
+    public static int PermissionRequestCodeCamera=10;
+    public static final int IMAGE_CAPTURE_REQUEST = 10;
+    public void Camera_Init() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(
+                    new String[] {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PermissionRequestCodeCamera
+            );
+        }
+    }
+
+    public String currentPhotoPath;
+    public Uri mCurrentPhotoUri;
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = MainActivity.getInstance().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void Camera_TakePhoto() {
+        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+            Intent takePictureIntent=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                File photoFile=null;
+                try {
+                    photoFile=createImageFile();
+                } catch (IOException e) {
+                    Log.e("MAIN ACTIVITY","CREATE IMAGE FILE ERROR");
+                    e.printStackTrace();
+                }
+
+                if (photoFile!=null) {
+                    Uri photoUri= FileProvider.getUriForFile(this,"com.example.worldmapexchange.fileprovider",
+                            photoFile);
+                    mCurrentPhotoUri=photoUri;
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentPhotoUri);
+                    startActivityForResult(takePictureIntent, IMAGE_CAPTURE_REQUEST);
+                }
+                else {
+                    Log.e ("MAIN ACT", "PHOTOFILE IS NULL");
+                }
+            }
+        }
+        else {
+            Toast.makeText(this, "No camera found", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /*
+    === END CAMERA ===
+     */
+
+    class AsyncTaskRecognize extends AsyncTask<String,Void,String> {
+        OkHttpClient client;
+        @Override
+        protected void onPreExecute() {
+            client=new OkHttpClient.Builder() //set no timeout
+                    .connectTimeout(0, TimeUnit.MINUTES)
+                    .readTimeout(0, TimeUnit.MINUTES)
+                    .writeTimeout(0, TimeUnit.MINUTES)
+                    .build();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            for (String path : strings) {
+                Bitmap bitmap= BitmapFactory.decodeFile(currentPhotoPath);
+                ByteArrayOutputStream bos=new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
+                byte[] bitmapData=bos.toByteArray();
+
+                Log.d("MAINACT","currentPhotoPath: " + currentPhotoPath);
+                Log.d("MAINACT","bitmapData length: " + bitmapData.length);
+
+                MediaType contentType= MediaType.get("image/png");
+
+                RequestBody requestBody=RequestBody.create(bitmapData,contentType);
+                RequestBody multipartBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("enctype","multipart/form-data")
+                        .addFormDataPart("file", "file",
+                                RequestBody.create(bitmapData, contentType))
+                        .build();
+
+                Request request = new Request.Builder()
+                        .url("http://192.168.1.122:8000/upload/")   //error if missing trailing /
+                        .post(requestBody)
+                        .build();
+                try {
+                    Response response=client.newCall(request).execute();
+                    if (response.isSuccessful()) {
+                        String body=response.body().string();
+                        JSONObject jsonObject=new JSONObject(body);
+                        String ans=jsonObject.getString("success");
+                        return ans;
+                    }
+                    else {
+                        Log.e("ASYNCTASKrecognize", "Somehow, response is not sucessful.");
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (s!=null) {
+                AppendResponseToExpression(s);
+                Log.d("ASYNCTASKreg","RESPONSE APPENDED TO EXPRESSION");
+                Toast.makeText(MainActivity.getInstance(), "RESPONSE APPENDED TO EXPRESSION", LENGTH_SHORT);
+            }
+            else {
+                Log.d("ASYNCTASKreg", "NULL RESPONSE");
+                Toast.makeText(MainActivity.getInstance(), "NULL RESPONSE", LENGTH_SHORT);
+            }
+            super.onPostExecute(s);
+            //we may delete the file here to free up space.
+        }
+    }
+
+    private void AppendResponseToExpression(String res) {
+        TextView expression = MainActivity.getInstance().findViewById(R.id.txt_Expression);
+        expression.append(res);
+        String txt=expression.getText().toString();
+        Log.d("MAINACT Expression: ",txt);
+        //expression.setText(txt);
+    }
+
+
 }
