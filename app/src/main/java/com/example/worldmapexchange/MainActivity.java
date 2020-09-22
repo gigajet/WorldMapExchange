@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
             case Resources.AREA_MODE:
             case Resources.MASS_MODE:
             case Resources.ENERGY_MODE:
-            case Resources.BASE_MODE:
+            //case Resources.BASE_MODE:
             case Resources.TIME_MODE:
             case Resources.TEMPERATURE_MODE:
                 btnAdd.setText("Choose target unit");
@@ -309,8 +309,8 @@ public class MainActivity extends AppCompatActivity {
 
         switch (mode)
         {
-            case Resources.BASE_MODE:
-                break;
+            //case Resources.BASE_MODE:
+                //break;
             case Resources.CURRENCY_MODE:
                 String baseurl = "https://currency.labstack.com/api/v1/rates";
                 String apiKey = "bjoVn986JOKvV8BXyGmMeaRq0sTBnlGI203NF68b7mRXqB-0zpbLt";

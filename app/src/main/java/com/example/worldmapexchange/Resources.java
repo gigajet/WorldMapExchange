@@ -11,7 +11,7 @@ public class Resources {
     public static final int ENERGY_MODE = 5;
     public static final int SPEED_MODE = 6;
     public static final int TIME_MODE = 7;
-    public static final int BASE_MODE = 8;
+    //public static final int BASE_MODE = 8;
     public static final int CURRENCY_MODE = 9;
 
 
