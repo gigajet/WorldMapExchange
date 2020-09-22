@@ -42,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -609,7 +610,11 @@ public class MainActivity extends AppCompatActivity {
         OkHttpClient client;
         @Override
         protected void onPreExecute() {
-            client=new OkHttpClient();
+            client=new OkHttpClient.Builder() //set no timeout
+                    .connectTimeout(0, TimeUnit.MINUTES)
+                    .readTimeout(0, TimeUnit.MINUTES)
+                    .writeTimeout(0, TimeUnit.MINUTES)
+                    .build();
             super.onPreExecute();
         }
 
@@ -640,12 +645,16 @@ public class MainActivity extends AppCompatActivity {
                         .build();
                 try {
                     Response response=client.newCall(request).execute();
-                    String body=response.body().string();
-                    JSONObject jsonObject=new JSONObject(body);
-                    String ans=jsonObject.getString("success");
-                    return ans;
+                    if (response.isSuccessful()) {
+                        String body=response.body().string();
+                        JSONObject jsonObject=new JSONObject(body);
+                        String ans=jsonObject.getString("success");
+                        return ans;
+                    }
+                    else {
+                        Log.e("ASYNCTASKrecognize", "Somehow, response is not sucessful.");
+                    }
                 } catch (IOException | JSONException e) {
-                    Log.e("MAINACT","Line648 error");
                     e.printStackTrace();
                 }
             }
@@ -656,9 +665,11 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             if (s!=null) {
                 AppendResponseToExpression(s);
+                Log.d("ASYNCTASKreg","RESPONSE APPENDED TO EXPRESSION");
                 Toast.makeText(MainActivity.getInstance(), "RESPONSE APPENDED TO EXPRESSION", LENGTH_SHORT);
             }
             else {
+                Log.d("ASYNCTASKreg", "NULL RESPONSE");
                 Toast.makeText(MainActivity.getInstance(), "NULL RESPONSE", LENGTH_SHORT);
             }
             super.onPostExecute(s);
@@ -670,7 +681,7 @@ public class MainActivity extends AppCompatActivity {
         TextView expression = MainActivity.getInstance().findViewById(R.id.txt_Expression);
         expression.append(res);
         String txt=expression.getText().toString();
-        Log.d("MAINACT",txt);
+        Log.d("MAINACT Expression: ",txt);
         //expression.setText(txt);
     }
 
