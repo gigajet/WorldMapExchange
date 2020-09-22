@@ -31,6 +31,7 @@ def clone(filename, para):
     model = keras.models.load_model("./myapp2/digit/my_model2")
 
     image = cv2.imread(filename)
+    print('Reg.py clone filename: ',filename)
     grey = cv2.cvtColor(image.copy(), cv2.COLOR_BGR2GRAY)
     ret, thresh = cv2.threshold(grey.copy(), para, 255, cv2.THRESH_BINARY_INV)
     contours, hierarchy = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
