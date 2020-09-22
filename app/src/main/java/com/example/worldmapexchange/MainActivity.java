@@ -197,6 +197,46 @@ public class MainActivity extends AppCompatActivity {
             curStr.append(num);
     }
 
+    private void setButton(boolean val)
+    {
+        TextView textView = findViewById(R.id.btn_dot);
+        textView.setEnabled(val);
+        textView = findViewById(R.id.btn_0);
+        textView.setEnabled(val);
+        textView = findViewById(R.id.btn_1);
+        textView.setEnabled(val);
+        textView = findViewById(R.id.btn_2);
+        textView.setEnabled(val);
+        textView = findViewById(R.id.btn_3);
+        textView.setEnabled(val);
+        textView = findViewById(R.id.btn_4);
+        textView.setEnabled(val);
+        textView = findViewById(R.id.btn_5);
+        textView.setEnabled(val);
+        textView = findViewById(R.id.btn_6);
+        textView.setEnabled(val);
+        textView = findViewById(R.id.btn_7);
+        textView.setEnabled(val);
+        textView = findViewById(R.id.btn_8);
+        textView.setEnabled(val);
+        textView = findViewById(R.id.btn_9);
+        textView.setEnabled(val);
+        textView = findViewById(R.id.btn_dot);
+        textView.setEnabled(val);
+        ImageView imageView = findViewById(R.id.btn_add);
+        imageView.setEnabled(val);
+        imageView = findViewById(R.id.btn_back);
+        imageView.setEnabled(val);
+        imageView = findViewById(R.id.btn_convert);
+        imageView.setEnabled(val);
+        imageView = findViewById(R.id.btn_div);
+        imageView.setEnabled(val);
+        imageView = findViewById(R.id.btn_mul);
+        imageView.setEnabled(val);
+        imageView = findViewById(R.id.btn_sub);
+        imageView.setEnabled(val);
+    }
+
     public void onConvertClick(View view) {
         TextView expression = findViewById(R.id.txt_Expression);
         String base = ((TextView)findViewById(R.id.txt_Base_1)).getText().toString();
