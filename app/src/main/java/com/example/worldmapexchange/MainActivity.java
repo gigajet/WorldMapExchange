@@ -289,6 +289,8 @@ public class MainActivity extends AppCompatActivity {
     public void onConvertClick(View view) {
         TextView expression = findViewById(R.id.txt_Expression);
         String base = ((TextView)findViewById(R.id.txt_Base_1)).getText().toString();
+        MainActivity.isValid = true;
+
         double result = MainActivity.eval(expression.getText().toString());
         if (!MainActivity.isValid) result = 0.0;
         TextView txtResult = findViewById(R.id.txt_Exp_Result);

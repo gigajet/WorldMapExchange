@@ -20,7 +20,7 @@ public class Resources {
 
     public static int chosenMode = 0;
 
-    public static String[] defaultBase = {"m", "m2", "kg", "C", "rad", "J", "m/s", "sec", "base 2", "USD"};
+    public static String[] defaultBase = {"m", "m2", "kg", "C", "rad", "J", "mps", "s", "base 2", "USD"};
     //public static String[] defaultRateBase = {"m", "m2", "kg", "C", "C", "J", "mach", "y", "base 2", "USD"};
 
     private Resources()

@@ -1,5 +1,7 @@
 package com.example.worldmapexchange;
 
+import android.util.Log;
+
 import com.google.android.gms.maps.model.Polyline;
 
 import org.json.JSONObject;
@@ -28,11 +30,12 @@ public class Converter {
         }
         catch (Exception e)
         {
-            return 0.0;
+            return -2.0;
         }
 
         try
         {
+            Log.e("jsonException: ",base + "     " + target);
             JSONObject jsonObject = new JSONObject(json);
             String rates = jsonObject.getString("rate");
             JSONObject rateobj = new JSONObject(rates);
@@ -43,7 +46,8 @@ public class Converter {
         }
         catch (Exception e)
         {
-            return 0.0;
+            e.printStackTrace();
+            return -1.0;
         }
 
         //return 0.0;
