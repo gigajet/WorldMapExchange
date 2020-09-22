@@ -6,7 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //WITHOUT THIS LINE, NOT FUCKING WORK
             startActivity(intent);
             */
-            new AsyncTaskRecognize().execute(currentPhotoPath);
+            new AsyncTaskRecognize(this).execute(currentPhotoPath);
 
         }
     }
@@ -648,8 +651,15 @@ public class MainActivity extends AppCompatActivity {
 
     class AsyncTaskRecognize extends AsyncTask<String,Void,String> {
         OkHttpClient client;
+        ProgressDialog progressDialog = null;
+        public AsyncTaskRecognize(Activity activity)
+        {
+            progressDialog = new ProgressDialog(activity);
+        }
         @Override
         protected void onPreExecute() {
+            progressDialog.setTitle("Processing.. Please wait");
+            progressDialog.show();
             client=new OkHttpClient.Builder() //set no timeout
                     .connectTimeout(0, TimeUnit.MINUTES)
                     .readTimeout(0, TimeUnit.MINUTES)
@@ -703,6 +713,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
+            if (progressDialog.isShowing())
+                progressDialog.hide();
             if (s!=null) {
                 AppendResponseToExpression(s);
                 Log.d("ASYNCTASKreg","RESPONSE APPENDED TO EXPRESSION");
