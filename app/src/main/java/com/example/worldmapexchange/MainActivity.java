@@ -621,6 +621,9 @@ public class MainActivity extends AppCompatActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
                 byte[] bitmapData=bos.toByteArray();
 
+                Log.d("MAINACT","currentPhotoPath: " + currentPhotoPath);
+                Log.d("MAINACT","bitmapData length: " + bitmapData.length);
+
                 MediaType contentType= MediaType.get("image/png");
 
                 RequestBody requestBody=RequestBody.create(bitmapData,contentType);
@@ -642,6 +645,7 @@ public class MainActivity extends AppCompatActivity {
                     String ans=jsonObject.getString("success");
                     return ans;
                 } catch (IOException | JSONException e) {
+                    Log.e("MAINACT","Line648 error");
                     e.printStackTrace();
                 }
             }
@@ -652,10 +656,10 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String s) {
             if (s!=null) {
                 AppendResponseToExpression(s);
-                Toast.makeText(MainActivity.this, "RESPONSE APPENDED TO EXPRESSION", LENGTH_SHORT);
+                Toast.makeText(MainActivity.getInstance(), "RESPONSE APPENDED TO EXPRESSION", LENGTH_SHORT);
             }
             else {
-                Toast.makeText(MainActivity.this, "NULL RESPONSE", LENGTH_SHORT);
+                Toast.makeText(MainActivity.getInstance(), "NULL RESPONSE", LENGTH_SHORT);
             }
             super.onPostExecute(s);
             //we may delete the file here to free up space.
@@ -663,10 +667,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void AppendResponseToExpression(String res) {
-        TextView expression = findViewById(R.id.txt_Expression);
+        TextView expression = MainActivity.getInstance().findViewById(R.id.txt_Expression);
+        expression.append(res);
         String txt=expression.getText().toString();
-        txt+=res;
-        expression.setText(txt);
+        Log.d("MAINACT",txt);
+        //expression.setText(txt);
     }
 
 
