@@ -30,7 +30,6 @@ import java.util.Iterator;
 
 public class thanhActivity extends AppCompatActivity {
     private thanhCurrencyAdapter thanhCurrencyAdapter = null;
-    private AllObjectAdapter allObjectAdapter = null;
     private Resources resources = Resources.getInstance();
 
     @Override
@@ -60,8 +59,8 @@ public class thanhActivity extends AppCompatActivity {
     private void UpdateListView()
     {
         ListView listView = findViewById(R.id.thanhListView);
-        allObjectAdapter = new AllObjectAdapter(this,resources.allBase);
-        listView.setAdapter(allObjectAdapter);
+        thanhCurrencyAdapter = new thanhCurrencyAdapter(this,0,resources.allBase);
+        listView.setAdapter(thanhCurrencyAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -91,7 +90,7 @@ public class thanhActivity extends AppCompatActivity {
             String src = "";
             while(keys.hasNext()) {
                 key = keys.next();
-                src = "image/USD.svg";
+                src = "image/blank.svg";
                 name = jsonObject.getString(key);
                 res.add(new AllObject(name, key, src, 0.0));
             }
@@ -135,18 +134,6 @@ public class thanhActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-    }
-
-    private void updateCurrency() {
-        ListView listView = findViewById(R.id.thanhListView);
-        thanhCurrencyAdapter = new thanhCurrencyAdapter(this,0,resources.allBase);
-        listView.setAdapter(thanhCurrencyAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                finishWork(position);
-            }
-        });
     }
 
     @Override
@@ -226,7 +213,7 @@ public class thanhActivity extends AppCompatActivity {
             resources.allBase = new ArrayList<>(res);
             if (dialog.isShowing())
                 dialog.dismiss();
-            updateCurrency();
+            UpdateListView();
         }
     }
 }

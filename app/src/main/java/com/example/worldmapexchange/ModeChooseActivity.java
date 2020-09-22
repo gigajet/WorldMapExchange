@@ -40,9 +40,9 @@ public class ModeChooseActivity extends AppCompatActivity {
             case R.id.btnModeTime:
                 Resources.getInstance().chosenMode=Resources.getInstance().TIME_MODE;
                 break;
-            case R.id.btnModeBase:
-                Resources.getInstance().chosenMode=Resources.getInstance().BASE_MODE;
-                break;
+            //case R.id.btnModeBase:
+                //Resources.getInstance().chosenMode=Resources.getInstance().BASE_MODE;
+                //break;
             case R.id.btnModeCurrency:
                 Resources.getInstance().chosenMode=Resources.getInstance().CURRENCY_MODE;
                 break;

@@ -11,7 +11,7 @@ public class Resources {
     public static final int ENERGY_MODE = 5;
     public static final int SPEED_MODE = 6;
     public static final int TIME_MODE = 7;
-    public static final int BASE_MODE = 8;
+    //public static final int BASE_MODE = 8;
     public static final int CURRENCY_MODE = 9;
 
 
@@ -36,4 +36,5 @@ public class Resources {
     public AllObject chosenBase = null; //chosen base currency
     public ArrayList<AllObject> allBase = null; //all currency list
     public AllObject baseCurrencyAPI; //base rate from API
+    public String url = "http://192.168.100.6:8000/upload/";
 }
