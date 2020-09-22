@@ -680,7 +680,7 @@ public class MainActivity extends AppCompatActivity {
                         .build();
 
                 Request request = new Request.Builder()
-                        .url("http://192.168.1.122:8000/upload/")   //error if missing trailing /
+                        .url(resources.url)   //error if missing trailing /
                         .post(requestBody)
                         .build();
                 try {

@@ -36,4 +36,5 @@ public class Resources {
     public AllObject chosenBase = null; //chosen base currency
     public ArrayList<AllObject> allBase = null; //all currency list
     public AllObject baseCurrencyAPI; //base rate from API
+    public String url = "http://192.168.100.6:8000/upload/";
 }
