@@ -667,6 +667,7 @@ public class MainActivity extends AppCompatActivity {
                     .readTimeout(0, TimeUnit.MINUTES)
                     .writeTimeout(0, TimeUnit.MINUTES)
                     .build();
+            setButton(false);
             super.onPreExecute();
         }
 
@@ -726,6 +727,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("ASYNCTASKreg", "NULL RESPONSE");
                 Toast.makeText(MainActivity.getInstance(), "NULL RESPONSE", LENGTH_SHORT);
             }
+            setButton(true);
             super.onPostExecute(s);
             //we may delete the file here to free up space.
         }
